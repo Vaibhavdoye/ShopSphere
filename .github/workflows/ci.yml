@@ -10,6 +10,8 @@ jobs:
   backend:
     name: Backend Tests and Build
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: "shopsphere-ci-test-secret-at-least-32-characters"
 
     steps:
       - name: Checkout code
