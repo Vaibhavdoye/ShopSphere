@@ -16,3 +16,18 @@
 .vscode/
 .idea/
 .DS_Store
+ 
+# Temporary and backup files 
+*.dump 
+*.tar 
+**/*.backup 
+**/*test-backup* 
+backend/npm 
+backend/cd 
+backend/backend@1.0.0 
+frontend/package.jso 
+**/test-results/ 
+**/playwright-report/ 
+**/coverage/
+**/*.security-backup
+backend/reset-admin-password.cjs 

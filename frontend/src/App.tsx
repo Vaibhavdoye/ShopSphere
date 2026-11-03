@@ -2,8 +2,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
-const AUTH_URL = 'http://localhost:5002/api/auth'
-
+const AUTH_URL = 'http://localhost:5000/api/auth'
 type Product = {
   id: number
   name: string
@@ -47,7 +46,7 @@ const [token, setToken] = useState<string | null>(null)
 
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/products')
+fetch('http://localhost:5000/api/products')
       .then((response) => {
         if (!response.ok) throw new Error('Failed to load products')
         return response.json()
@@ -319,7 +318,7 @@ const logout = () => {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-              minLength={8}
+minLength={authMode === 'login' ? 1 : 8}
               autoComplete={
                 authMode === 'login' ? 'current-password' : 'new-password'
               }
@@ -507,7 +506,8 @@ const logout = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5003/api/orders', {
+      const response = await 
+fetch('http://localhost:5000/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

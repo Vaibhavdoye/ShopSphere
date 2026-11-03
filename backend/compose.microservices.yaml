@@ -1,0 +1,41 @@
+services:
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth
+    image: shopsphere-auth:latest
+    env_file:
+      - .env
+    environment:
+      AUTH_PORT: 5002
+      DB_HOST: host.docker.internal
+    ports:
+      - "5022:5002"
+    restart: unless-stopped
+
+  product-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.product
+    image: shopsphere-product:latest
+    env_file:
+      - .env
+    environment:
+      PRODUCT_PORT: 5001
+    ports:
+      - "5021:5001"
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.order
+    image: shopsphere-order:latest
+    env_file:
+      - .env
+    environment:
+      ORDER_PORT: 5003
+      DB_HOST: host.docker.internal
+    ports:
+      - "5023:5003"
+    restart: unless-stopped

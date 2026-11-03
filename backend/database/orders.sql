@@ -22,3 +22,6 @@ CREATE INDEX IF NOT EXISTS idx_orders_user_id
 
 CREATE INDEX IF NOT EXISTS idx_order_items_order_id
     ON order_items(order_id);
+
+CREATE INDEX IF NOT EXISTS idx_orders_user_created
+    ON orders(user_id, created_at DESC);

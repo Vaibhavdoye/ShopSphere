@@ -3,7 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import 'dotenv/config'
 import { pool } from './db'
-import { authenticateToken, type AuthRequest } from './auth'
+import { authenticateToken, authorizeRoles, type AuthRequest } from './auth'
 import { products } from './products'
 
 export const app = express()
@@ -11,8 +11,27 @@ export const app = express()
 const PORT = Number(process.env.ORDER_PORT) || 5003
 
 app.use(helmet())
-app.use(cors({ origin: 'http://localhost:5173' }))
+app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:8080'] }))
 app.use(express.json({ limit: '10kb' }))
+// Request logging middleware
+app.use((req, res, next) => {
+  const startTime = Date.now()
+
+  res.on('finish', () => {
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        service: 'order-service',
+        method: req.method,
+        url: req.originalUrl,
+        statusCode: res.statusCode,
+        responseTime: `${Date.now() - startTime}ms`,
+      }),
+    )
+  })
+
+  next()
+})
 
 // Service health check
 app.get('/health', (_req, res) => {
@@ -237,6 +256,59 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
     })
   }
 })
+
+// Admin: Fetch all customers' orders
+app.get(
+  '/api/orders/all',
+  authenticateToken,
+  authorizeRoles('admin'),
+  async (_req, res) => {
+    try {
+      const result = await pool.query(
+        `SELECT
+           o.id,
+           o.user_id,
+           o.total_amount,
+           o.status,
+           o.created_at,
+           COALESCE(
+             json_agg(
+               json_build_object(
+                 'productId', oi.product_id,
+                 'productName', oi.product_name,
+                 'quantity', oi.quantity,
+                 'unitPrice', oi.unit_price
+               )
+               ORDER BY oi.id
+             ) FILTER (WHERE oi.id IS NOT NULL),
+             '[]'::json
+           ) AS items
+         FROM orders o
+         LEFT JOIN order_items oi ON oi.order_id = o.id
+         GROUP BY o.id
+         ORDER BY o.created_at DESC`,
+      )
+
+      return res.json({
+        success: true,
+        orders: result.rows.map((order) => ({
+          id: order.id,
+          userId: order.user_id,
+          totalAmount: Number(order.total_amount),
+          status: order.status,
+          createdAt: order.created_at,
+          items: order.items,
+        })),
+      })
+    } catch (error) {
+      console.error('Admin fetch orders error:', error)
+      return res.status(500).json({
+        success: false,
+        message: 'Unable to fetch all orders.',
+      })
+    }
+  },
+)
 
 // Start the service
 if (require.main === module) {

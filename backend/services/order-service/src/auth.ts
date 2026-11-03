@@ -36,11 +36,12 @@ export function authenticateToken(
   issuer: 'shopsphere-auth',
 })
 
-    if (
-      typeof payload === 'string' ||
-      !payload.sub ||
-      !/^\d+$/.test(payload.sub)
-    ) {
+   if (
+  typeof payload === 'string' ||
+  !payload.sub ||
+  !/^\d+$/.test(payload.sub) ||
+  !['customer', 'admin'].includes(String(payload.role))
+) {
       return res.status(401).json({
         success: false,
         message: 'Invalid token.',
@@ -50,8 +51,7 @@ export function authenticateToken(
     req.user = {
       id: Number(payload.sub),
       email: typeof payload.email === 'string' ? payload.email : '',
-      role: typeof payload.role === 'string' ? payload.role : 'customer',
-    }
+role: String(payload.role),    }
 
     return next()
   } catch {
@@ -59,5 +59,29 @@ export function authenticateToken(
       success: false,
       message: 'Invalid or expired token.',
     })
+  }
+}
+
+export function authorizeRoles(...allowedRoles: string[]) {
+  return (
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required.',
+      })
+    }
+
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to perform this action.',
+      })
+    }
+
+    return next()
   }
 }
