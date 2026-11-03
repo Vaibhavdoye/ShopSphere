@@ -10,8 +10,29 @@ jobs:
   backend:
     name: Backend Tests and Build
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: shopsphere
+          POSTGRES_PASSWORD: shopsphere_test_password
+          POSTGRES_DB: shopsphere
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U shopsphere -d shopsphere"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
       JWT_SECRET: "shopsphere-ci-test-secret-at-least-32-characters"
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: shopsphere
+      DB_PASSWORD: shopsphere_test_password
+      DB_NAME: shopsphere
 
     steps:
       - name: Checkout code
@@ -26,6 +47,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: backend
+
+      - name: Initialize database schema
+        run: |
+          PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -f database/users.sql
+          PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -f database/orders.sql
         working-directory: backend
 
       - name: Run backend tests
