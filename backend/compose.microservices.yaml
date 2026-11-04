@@ -9,6 +9,7 @@ services:
     environment:
       AUTH_PORT: 5002
       DB_HOST: host.docker.internal
+      DB_SSL: "false"
     ports:
       - "5022:5002"
     restart: unless-stopped
@@ -36,6 +37,7 @@ services:
     environment:
       ORDER_PORT: 5003
       DB_HOST: host.docker.internal
+      DB_SSL: "false"
     ports:
       - "5023:5003"
     restart: unless-stopped

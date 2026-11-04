@@ -1,5 +1,7 @@
 import { Pool } from 'pg'
 
+const sslEnabled = process.env.DB_SSL === 'true'
+
 export const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   port: Number(process.env.DB_PORT) || 5432,
@@ -9,6 +11,11 @@ export const pool = new Pool({
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
+  ...(sslEnabled && {
+    ssl: {
+      rejectUnauthorized: true,
+    },
+  }),
 })
 
 pool.on('error', (error) => {

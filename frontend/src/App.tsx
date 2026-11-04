@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
-const AUTH_URL = 'http://localhost:5000/api/auth'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const AUTH_URL = `${API_URL}/auth`
 type Product = {
   id: number
   name: string
@@ -46,7 +47,7 @@ const [token, setToken] = useState<string | null>(null)
 
 
   useEffect(() => {
-fetch('http://localhost:5000/api/products')
+fetch(`${API_URL}/products`)
       .then((response) => {
         if (!response.ok) throw new Error('Failed to load products')
         return response.json()
@@ -507,7 +508,7 @@ minLength={authMode === 'login' ? 1 : 8}
 
     try {
       const response = await 
-fetch('http://localhost:5000/api/orders', {
+fetch(`${API_URL}/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

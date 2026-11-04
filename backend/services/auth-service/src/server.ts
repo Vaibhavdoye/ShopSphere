@@ -96,10 +96,10 @@ app.post('/api/auth/register', async (req, res) => {
   try {
     const passwordHash = await bcrypt.hash(password, 12)
 
-    const result = await pool.query(
-     `INSERT INTO users (name, email, password_hash)
- VALUES ($1, $2, $3)
- RETURNING id, name, email, password_hash, role`,
+       const result = await pool.query(
+      `INSERT INTO users (name, email, password_hash)
+       VALUES ($1, $2, $3)
+       RETURNING id, name, email, role`,
       [name.trim(), normalizedEmail, passwordHash],
     )
 
@@ -108,11 +108,9 @@ const user: User = {
   id: Number(row.id),
   name: row.name,
   email: row.email,
-  passwordHash: row.password_hash,
+  passwordHash,
   role: row.role,
 }
-
-
     return res.status(201).json({
       success: true,
       message: 'Registration successful.',
