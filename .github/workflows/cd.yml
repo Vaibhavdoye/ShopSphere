@@ -32,11 +32,10 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/shopsphere-backend:latest
-
+tags: ghcr.io/vaibhavdoye/shopsphere-backend:latest
       - name: Build and push frontend
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/shopsphere-frontend:latest
+tags: ghcr.io/vaibhavdoye/shopsphere-frontend:latest
