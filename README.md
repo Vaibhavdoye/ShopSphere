@@ -1,406 +1,296 @@
-\# ShopSphere – Enterprise E-Commerce Platform
-
-
+# ShopSphere – Enterprise E-Commerce Platform
 
 ShopSphere is a full-stack e-commerce application built with React, TypeScript, Node.js, Express, and PostgreSQL. It provides product browsing, user authentication, shopping cart management, and order processing.
 
+## 1. Technology Stack
 
+### Frontend
+- React 19
+- TypeScript
+- Vite
+- CSS
+- Local Storage for cart persistence
 
-\## 1. Technology Stack
+### Backend
+- Node.js
+- Express 5
+- TypeScript
+- PostgreSQL
+- JWT Authentication
+- bcryptjs for password hashing
+- Helmet and Express Rate Limit for security
 
+### Infrastructure
+- Docker and Docker Compose
+- Kubernetes
+- GitHub Actions
 
-
-\### Frontend
-
-\- React 19
-
-\- TypeScript
-
-\- Vite
-
-\- CSS
-
-\- Local Storage for cart persistence
-
-
-
-\### Backend
-
-\- Node.js
-
-\- Express 5
-
-\- TypeScript
-
-\- PostgreSQL
-
-\- JWT Authentication
-
-\- bcryptjs for password hashing
-
-\- Helmet and Express Rate Limit for security
-
-
-
-\## 2. Project Structure
-
-
+## 2. Project Structure
 
 ```text
-
 Enterprise-Ecommerce-Project/
-
-│
-
 ├── backend/
-
 │   ├── database/
-
-│   │   └── orders.sql
-
 │   ├── services/
-
 │   │   ├── - product-service/
-
 │   │   ├── auth-service/
-
 │   │   └── order-service/
-
+│   ├── src/
 │   ├── tests/
-
-│   │   └── auth.test.ts
-
-│   ├── src/
-
-│   │   └── server.ts
-
-│   ├── package.json
-
-│   └── tsconfig.json
-
-│
-
-├── frontend/
-
-│   ├── public/
-
-│   ├── src/
-
-│   │   ├── assets/
-
-│   │   ├── App.tsx
-
-│   │   ├── App.css
-
-│   │   ├── index.css
-
-│   │   └── main.tsx
-
+│   ├── Dockerfile
 │   └── package.json
-
-│
-
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+├── k8s/
+│   └── microservices.yaml
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 └── README.md
-
 ```
 
+## 3. Main Features
 
+- User registration and login
+- JWT-based authentication
+- Role-based authorization
+- Secure password hashing
+- Product listing and browsing
+- Shopping cart management
+- Cart persistence using Local Storage
+- Order placement and management
+- PostgreSQL database integration
+- Input validation and error handling
+- Rate limiting and security headers
+- Microservices architecture
+- API Gateway integration
 
-\## 3. Main Features
-
-
-
-\- User registration and login
-
-\- JWT-based authentication
-
-\- Secure password hashing
-
-\- Product listing and browsing
-
-\- Shopping cart management
-
-\- Cart persistence using Local Storage
-
-\- Order placement and management
-
-\- PostgreSQL database integration
-
-\- Input validation and error handling
-
-\- Rate limiting and security headers
-
-
-
-\## 4. Backend Services
-
-
+## 4. Backend Services
 
 | Service | Port | Responsibility |
-
 |---|---:|---|
-
-| Main API | 5000 | Main API and health endpoint |
-
+| Main API Gateway | 5000 | Routes API requests |
 | Product Service | 5001 | Product operations |
-
 | Auth Service | 5002 | Registration and authentication |
-
 | Order Service | 5003 | Order operations |
 
+## 5. Installation and Setup
 
+### Prerequisites
+- Node.js and npm
+- PostgreSQL
+- Git
+- Docker Desktop (for container deployment)
+- Kubernetes (for orchestration)
 
-\## 5. Installation and Setup
-
-
-
-\### Prerequisites
-
-\- Node.js and npm
-
-\- PostgreSQL
-
-\- Git
-
-
-
-\### Backend Setup
-
-
-
-Open a terminal in the backend directory:
-
-
+### Backend Setup
 
 ```bash
-
 cd backend
-
 npm install
-
-```
-
-
-
-Configure the required database and JWT environment variables in `backend/.env`. Do not commit this file.
-
-
-
-Build the backend:
-
-
-
-```bash
-
 npm run build
-
-```
-
-
-
-Start the main API:
-
-
-
-```bash
-
 npm run dev
-
 ```
 
+Configure the required database and JWT environment variables in the appropriate `.env` files. Never commit secrets.
 
-
-\### Frontend Setup
-
-
+### Frontend Setup
 
 Open another terminal:
 
-
-
 ```bash
-
 cd frontend
-
 npm install
-
 npm run dev
-
 ```
-
-
 
 Open the local URL displayed by Vite in your browser.
 
+### Additional Services
 
+The Product, Auth, and Order services are located in `backend/services/`. Configure their environment variables and database requirements before starting them individually.
 
-\### Additional Services
-
-
-
-The Product, Auth, and Order services are located in `backend/services/`. Configure their database and environment requirements before starting them individually.
-
-
-
-\## 6. Database
-
-
+## 6. Database
 
 ShopSphere uses PostgreSQL for persistent application data.
 
-
-
 The order database schema is available at:
-
-
 
 `backend/database/orders.sql`
 
+The order schema references the users table, which must exist before creating the order tables.
 
+Database indexing is implemented for order query optimization.
 
-The order schema references the `users` table, which must exist before creating the order tables.
+## 7. API Endpoints
 
+### Main API Gateway
+- `GET /api/health`
+- `GET /api/metrics`
 
+### Product Service
+- `GET /health`
+- `GET /api/products`
+- `GET /api/products/:id`
 
-\## 7. API Endpoints
+### Auth Service
+- `GET /health`
+- `GET /health/db`
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
 
+### Order Service
+- `GET /health`
+- `GET /health/db`
+- `POST /api/orders`
+- `GET /api/orders`
 
+The API Gateway routes authentication, product, and order requests to their respective services.
 
-\### Main API
+## 8. Testing
 
-\- `GET /api/health`
-
-
-
-\### Product Service
-
-\- `GET /health`
-
-\- `GET /api/products`
-
-\- `GET /api/products/:id`
-
-
-
-\### Auth Service
-
-\- `GET /health`
-
-\- `GET /health/db`
-
-\- `POST /api/auth/register`
-
-\- `POST /api/auth/login`
-
-\- `GET /api/auth/me`
-
-
-
-\### Order Service
-
-\- `GET /health`
-
-\- `GET /health/db`
-
-\- `POST /api/orders`
-
-\- `GET /api/orders`
-
-
-
-\## 8. Testing
-
-
-
-Run backend tests:
-
-
+### Backend Tests
 
 ```bash
-
 cd backend
-
 npm test
-
 ```
 
-
-
-Build the frontend:
-
-
+### Backend Build
 
 ```bash
-
-cd frontend
-
-npm run build
-
-```
-
-
-
-Build the backend:
-
-
-
-```bash
-
 cd backend
-
 npm run build
-
 ```
 
+### Frontend Build
 
+```bash
+cd frontend
+npm run build
+```
 
-\## 9. Security
+### End-to-End Testing
 
+Playwright is used for automated end-to-end testing of the shopping journey.
 
+## 9. Security
 
-The project includes:
+Implemented security features:
+- JWT-based authentication
+- Role-based authorization
+- bcrypt password hashing
+- Helmet security headers
+- Express rate limiting
+- Input validation
+- Parameterized database queries
+- Environment-based secret configuration
+- Non-root backend container execution
+- Kubernetes resource limits and health probes
 
-\- JWT-based authentication
+Production HTTPS and PostgreSQL TLS must be configured with valid production certificates and a TLS-enabled database provider before public production deployment.
 
-\- bcrypt password hashing
+## 10. Monitoring and Logging
 
-\- Helmet security headers
+- Structured JSON request logging
+- Request timestamp, method, URL, status code, and response time
+- API metrics endpoint at `/api/metrics`
+- Application uptime and memory usage
+- Total request counter
+- Health check endpoints
 
-\- Express rate limiting
+## 11. Docker Deployment
 
-\- Input validation
+The main Docker Compose configuration can be started with:
 
-\- Parameterized database queries
+```bash
+docker compose up --build -d
+```
 
-\- Environment-based secret configuration
+Check running containers:
 
+```bash
+docker compose ps
+```
 
+Stop containers:
 
-\## 10. Future Improvements
+```bash
+docker compose down
+```
 
+For the microservices configuration:
 
+```bash
+cd backend
+docker compose -f compose.microservices.yaml up --build -d
+```
 
-\- API Gateway integration
+## 12. Kubernetes Deployment
 
-\- Role-based authorization
+Kubernetes configuration is available in the `k8s/` directory.
 
-\- Automated end-to-end testing
+Check deployments, pods, and services:
 
-\- CI/CD pipeline
+```bash
+kubectl get deployments,pods,services
+```
 
-\- Docker and Kubernetes deployment
+Check backend rollout:
 
-\- Centralized logging and monitoring
+```bash
+kubectl rollout status deployment/shopsphere-backend
+```
 
-\- Performance testing and optimization
+View backend logs:
 
-\- Expanded technical documentation
+```bash
+kubectl logs deployment/shopsphere-backend
+```
 
+The current Kubernetes setup has been tested locally using Docker Desktop Kubernetes.
 
+## 13. CI/CD
 
-\## 11. Project Goal
+GitHub Actions CI workflow:
 
+`.github/workflows/ci.yml`
 
+The existing CI pipeline runs automated checks.
 
-The goal of ShopSphere is to demonstrate a modular e-commerce application with a React frontend, Node.js backend services, secure authentication, and PostgreSQL database integration.
+Continuous Deployment (CD) to a cloud environment is a remaining deployment task.
 
+## 14. Performance and Database Optimization
+
+- PostgreSQL indexing for frequently queried data
+- Database connection pooling
+- Order query optimization
+- API response caching for product lookup
+- Performance testing using Autocannon
+
+## 15. Deployment Status and Future Improvements
+
+### Implemented
+- Three backend microservices
+- API Gateway
+- Authentication and authorization
+- Docker containerization
+- Kubernetes deployment configuration
+- Unit tests and end-to-end testing
+- GitHub Actions CI
+- JSON logging and API metrics
+- Database indexing and performance testing
+
+### Remaining Production Tasks
+- Cloud deployment (AWS, GCP, or Azure)
+- Continuous Deployment pipeline
+- Public HTTPS with a valid TLS certificate
+- Production PostgreSQL TLS activation
+- Final integration testing coverage review
+
+## 16. Project Goal
+
+The goal of ShopSphere is to demonstrate a modular e-commerce application with a React frontend, Node.js backend microservices, secure authentication, PostgreSQL database integration, automated testing, and container orchestration.
